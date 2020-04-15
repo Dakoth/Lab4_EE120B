@@ -19,52 +19,62 @@ unsigned char tmpB;
 
 
 void Tick() {
+	unsigned char tmpA = PINA;
 	switch(Start) { //transitions
 		case Start: //beginnning state
 			state = Arelease;
 			break;
 		
 		case Arelease: //
-			if (tmpA == 0x01) { state = Bhold;	} 	
+			if ((tmpA & 0x01) == 0x01) { state = Bhold;	} 	
 			else { state = Arelease; }
 			break;
 
 		case Bhold: 
-			if (tmpA == 0x01) { state = Bhold; }	
+			if ((tmpA & 0x01) == 0x01) { state = Bhold; }	
 			else { state = Brelease; }
 			break;
 		
 		case Brelease: 
-			if (tmpA == 0x01) { state = Ahold; }
+			if ((tmpA & 0x01) == 0x01) { state = Ahold; }
 			else { state = Brelease; }
 			break;
 
 		case Ahold:
-			if (tmpA == 0x01) { state = Ahold;}
+			if ((tmpA & 0x01) == 0x01) { state = Ahold;}
 			else { state = Arelease; }
 			break; 
 
 		default: 
 			//shouldn't go here
+			state = Start;
 			break;					
 	}
 
 	switch(state) { 
 		case Arelease:
-			tmpB = 0x01; break; //!A1 A0
+			tmpB = tmpB | 0x01; //sets B0 = 1
+			tmpB = tmpB & 0xFD; //Sets A0 = 0
+			
+			break; //!A1 A0
 
 		case Bhold:
-			tmpB = 0x02; break; //A0 !A0
+			tmpB = tmpB | 0x02; 
+			tmpB = tmpB & 0xFE;
+			break; //A0 !A0
 
 		case Brelease:
-			tmpB = 0x02; break; //A0 !A0
+			tmpB = tmpB | 0x02; 
+			tmpB = tmpB & 0xFE;
+			break; //A0 !A0
 
 		case Ahold:
-			tmpB = 0x01; break; //!A1 A0
+			tmpB = tmpB | 0x01; 
+			tmpB = tmpB & 0xFD;
+			break; //!A1 A0
 		
 		default:
 			break;
-
 	}
 }
 
@@ -79,7 +89,7 @@ int main(void) {
 	/* Insert your solution below */
     	while (1) {
 		//read inputs
-		tmpA = PORTA; 
+		//tmpA = PINA; 
 
 		Tick(); 
 	

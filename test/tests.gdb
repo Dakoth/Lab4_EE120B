@@ -27,7 +27,7 @@ echo ======================================================\n
 echo Running all tests..."\n\n
 
 # Example test
-test "PINA: 0x00, PINB: 0x00 => PORTC: 0"
+#test "PINA: 0x00, PINB: 0x00 => PORTC: 0"
 # Set inputs
 #setPINA 0x00
 #setPINB 0x00
@@ -62,6 +62,26 @@ test "PINA: 0x00, PINB: 0x00 => PORTC: 0"
 #expect state pressA1
 #checkResult
 
+
+#PA0 = 0 from first state
+test "PINA: 0x00 => PINB: 0x01, state: Arelease"
+set state = Arelease
+setPINA 0x00
+continue 2
+expectPORTB 0x01
+expect state Arelease
+checkResult
+
+
+
+#just setting PA0 = 1 from first state
+test "PINA: 0x01 => PINB: 0x02, state: Bhold"
+set state = Arelease
+setPINA 0x01
+continue 5
+expectPORTB 0x02
+expect state Bhold
+checkResult
 
 
 
