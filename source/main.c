@@ -19,7 +19,7 @@ enum States {Start, Arelease, Bhold, Brelease, Ahold} state;
 
 void Tick() {
 	unsigned char tmpA = PINA;
-	switch(Start) { //transitions
+	switch(state) { //transitions
 		case Start: //beginnning state
 			state = Arelease;
 			break;
