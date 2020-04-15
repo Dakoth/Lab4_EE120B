@@ -1,7 +1,7 @@
 /*	Author: agonz250
- *  Partner(s) Name: 
+ *  Partner(s) Name: 028 
  *	Lab Section:
- *	Assignment: Lab #  Exercise #
+ *	Assignment: Lab # 4 Exercise # 1
  *	Exercise Description: [optional - include for your own benefit]
  *
  *	I acknowledge all content contained herein, excluding template or example
@@ -14,10 +14,14 @@
 
 int main(void) {
     /* Insert DDR and PORT initializations */
+	DDRA = 0x00; PORTA = 0xFF; //Makes all As as input
+	DDRB = 0xFF; PORTC = 0x00; //Makes all B pins as output	
+	
+	unsigned char tmpA;
+	unsigned char tmpB; 
+	/* Insert your solution below */
+    	while (1) {
 
-    /* Insert your solution below */
-    while (1) {
-
-    }
-    return 1;
+    	}
+    	return 1;
 }
