@@ -14,9 +14,8 @@
 
 enum States {Start, Arelease, Bhold, Brelease, Ahold} state; 
 
-unsigned char tmpA; //global variables 
-unsigned char tmpB; 
-
+//unsigned char tmpA; //global variables 
+//unsigned char tmpB = 0x00; 
 
 void Tick() {
 	unsigned char tmpA = PINA;
@@ -26,22 +25,26 @@ void Tick() {
 			break;
 		
 		case Arelease: //
-			if ((tmpA & 0x01) == 0x01) { state = Bhold;	} 	
+			if ((tmpA & 0x01) == 0x01) 
+				{ state = Bhold; } 	
 			else { state = Arelease; }
 			break;
 
 		case Bhold: 
-			if ((tmpA & 0x01) == 0x01) { state = Bhold; }	
+			if ( (tmpA & 0x01) == 0x01) 
+				{ state = Bhold; }	
 			else { state = Brelease; }
 			break;
 		
 		case Brelease: 
-			if ((tmpA & 0x01) == 0x01) { state = Ahold; }
+			if ((tmpA & 0x01) == 0x01) 
+				{ state = Ahold; }
 			else { state = Brelease; }
 			break;
 
 		case Ahold:
-			if ((tmpA & 0x01) == 0x01) { state = Ahold;}
+			if ((tmpA & 0x01) == 0x01) 
+				{ state = Ahold;}
 			else { state = Arelease; }
 			break; 
 
@@ -52,25 +55,27 @@ void Tick() {
 	}
 
 	switch(state) { 
+		case Start: 
+			break;
 		case Arelease:
-			tmpB = tmpB | 0x01; //sets B0 = 1
-			tmpB = tmpB & 0xFD; //Sets A0 = 0
+			PORTB = PORTB | 0x01; //sets B0 = 1
+			PORTB = PORTB & 0xFD; //Sets A0 = 0
 			
 			break; //!A1 A0
 
 		case Bhold:
-			tmpB = tmpB | 0x02; 
-			tmpB = tmpB & 0xFE;
+			PORTB = PORTB | 0x02; 
+			PORTB = PORTB & 0xFE;
 			break; //A0 !A0
 
 		case Brelease:
-			tmpB = tmpB | 0x02; 
-			tmpB = tmpB & 0xFE;
+			PORTB = PORTB | 0x02; 
+			PORTB = PORTB & 0xFE;
 			break; //A0 !A0
 
 		case Ahold:
-			tmpB = tmpB | 0x01; 
-			tmpB = tmpB & 0xFD;
+			PORTB = PORTB | 0x01; 
+			PORTB = PORTB & 0xFD;
 			break; //!A1 A0
 		
 		default:
@@ -94,7 +99,7 @@ int main(void) {
 		Tick(); 
 	
 		//write output
-		PORTB = tmpB;		
+		//PORTB = tmpB;		
     	}
     	return 1;
 }
