@@ -21,27 +21,17 @@ void Tick() {
 			break;
 		
 		case Arelease: //
-			if (tmpA == 0x01) {
-				state = Bhold;	
-			} 	
-			else {
-				state = Arelease; 
-			}
+			if (tmpA == 0x01) { state = Bhold;	} 	
+			else { state = Arelease; }
 			break;
 
 		case Bhold: 
-			if (tmpA == 0x01) {
-				state = Bhold;
-			}	
-			else {
-				state = Brelease;
-			}
+			if (tmpA == 0x01) { state = Bhold; }	
+			else { state = Brelease; }
 			break;
 		
 		case Brelease: 
-			if (tmpA == 0x01) {
-				state = Ahold;
-			}
+			if (tmpA == 0x01) { state = Ahold; }
 			else { state = Brelease; }
 			break;
 
@@ -55,11 +45,23 @@ void Tick() {
 			break;					
 	}
 
+	Switch(state) { 
+		case Arelease:
+			tmpB = 0x01; break;
 
+		case Bhold:
+			tmpB = 0x02; break;
 
+		case Brelease:
+			tmpB = 0x02; break;
 
+		case Ahold:
+			tmpB = 0x01; break;
+		
+		default:
+			break;
 
-
+	}
 }
 
 int main(void) {
