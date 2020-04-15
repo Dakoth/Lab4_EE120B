@@ -14,6 +14,10 @@
 
 enum States {Start, Arelease, Bhold, Brelease, Ahold} state; 
 
+unsigned char tmpA; //global variables 
+unsigned char tmpB; 
+
+
 void Tick() {
 	switch(Start) { //transitions
 		case Start: //beginnning state
@@ -45,18 +49,18 @@ void Tick() {
 			break;					
 	}
 
-	Switch(state) { 
+	switch(state) { 
 		case Arelease:
-			tmpB = 0x01; break;
+			tmpB = 0x01; break; //!A1 A0
 
 		case Bhold:
-			tmpB = 0x02; break;
+			tmpB = 0x02; break; //A0 !A0
 
 		case Brelease:
-			tmpB = 0x02; break;
+			tmpB = 0x02; break; //A0 !A0
 
 		case Ahold:
-			tmpB = 0x01; break;
+			tmpB = 0x01; break; //!A1 A0
 		
 		default:
 			break;
@@ -67,17 +71,20 @@ void Tick() {
 int main(void) {
     /* Insert DDR and PORT initializations */
 	DDRA = 0x00; PORTA = 0xFF; //Makes all As as input
-	DDRB = 0xFF; PORTC = 0x00; //Makes all B pins as output	
+	DDRB = 0xFF; PORTB = 0x00; //Makes all B pins as output	
 	
-	unsigned char tmpA;
-	unsigned char tmpB; 
+	//unsigned char tmpA;
+	//unsigned char tmpB;
+	state = Start;  
 	/* Insert your solution below */
     	while (1) {
+		//read inputs
 		tmpA = PORTA; 
 
-
-
-		PORTA = tmpB;		
+		Tick(); 
+	
+		//write output
+		PORTB = tmpB;		
     	}
     	return 1;
 }
