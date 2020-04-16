@@ -26,89 +26,52 @@
 echo ======================================================\n
 echo Running all tests..."\n\n
 
-test "PINA: 0x00 => PORTC: 7, state: Wait"
+#nothing
+test "PINA: 0x00 => PB:0, state: wait"
 set state = Start
 setPINA 0x00
 continue 2
-expectPORTC 7
-expect state Wait
+expectPORTB 0x00
+expect state wait
 checkResult
 
 
-#increment once 
-test "PINA: 0x01 => PORTC: 8, state: incHold"
+#1st part of sequence 
+test "PINA: 0x04 => PB:0, state: seq1"
 set state = Start
-setPINA 0x01
+setPINA 0x04
 continue 2
-expectPORTC 8
-expect state incHold
+expectPORTB 0x00
+expect state seq1
 checkResult
 
 
-#increment once AGAIN FOR AUTOGRADER 
-test "AUTOGRADER TEST: PINA: 0x01 => PORTC: 8, state: incHold"
-set state = incHold
-setPINA 0x01
-continue 2
-expectPORTC 8
-expect state incHold
-checkResult
-
-
-
-
-
-#increment twice 
-test "PINA: 0x01 (PA0), 0x00 (!PA0), 0x01(PA0) => PORTC: 9, state: incHold"
+#failing to enter sequence at seq1
+test "PINA: 0x04, 0x02 => PB:0, state: wait"
 set state = Start
-setPINA 0x01
+setPINA 0x04
 continue 2
-setPINA 0x00 
-continue 2
-setPINA 0x01
-continue 2
-expectPORTC 9
-expect state incHold
-checkResult
-
-
-#max value check 
-test "PORTC = 9, PINA: => PORTC: 9, state: Wait"
-set Tick::tmpC = 9
-set state = Wait  
-setPINA 0x01
-continue 2
-setPINA 0x00 
-continue 2
-expectPORTC 9
-expect state Wait
-checkResult
-
-
-#reset check 
-test "PINA: 0x03 => PORTC: 0, state: reset"
-set state = Start
-setPINA 0x03
-continue 2
-expectPORTC 0
-expect state reset
-checkResult
-
-
-#0 check 
-test "PORTC = 1, PINA: 0x02, 0x00, 0x02  => PORTC: 0, state: decHold"
-set Tick::tmpC = 1
-set state = Wait
 setPINA 0x02
+continue 2
+expectPORTB 0x00
+expect state wait
+checkResult
+
+
+#going to seq2
+test "PINA: 0x04, 0x00 => PB:0, state: seq2"
+set state = Start
+setPINA 0x04
 continue 2
 setPINA 0x00
 continue 2
-setPINA 0x02
-continue 2
-
-expectPORTC 0
-expect state decHold
+expectPORTB 0x00
+expect state seq2
 checkResult
+
+
+
+
 
 
 # Report on how many tests passed/tests ran

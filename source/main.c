@@ -44,7 +44,7 @@ void Tick() {
 			else { state = wait; }
 			break;
 
-		case seq2;
+		case seq2:
 			if ((tmpA & 0x87) == 0x02) { //IF PA1 is turned on, then unlock the door 
 				state = door;
 				tmpB = 0x01;
