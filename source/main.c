@@ -12,7 +12,7 @@
 #include "simAVRHeader.h"
 #endif
 
-enum States {Start, Wait, incHold, decHold, reset} state; 
+enum States {Start, wait, seq1, seq2, door} state; 
 
 unsigned char tmpA; //global variables 
 unsigned char tmpC;//= 0x00; 
@@ -21,58 +21,39 @@ void Tick() {
 	//unsigned char tmpA = PINA;
 	switch(state) { //transitions
 		case Start:
-			tmpC = 7; 
-			state = Wait;
+			state = wait;	
 			break;
-		
-		case Wait:
-			if ( ((tmpA & 0x01) == 0x01) && ((tmpA & 0x02) == 0x00) ) { //if PA0 && !PA1
-				state = incHold;
-
-				if (tmpC < 9) { ++tmpC; } //TRANSITION ACTION
-
-			} 
-			else if ( ((tmpA & 0x02) == 0x02) && ((tmpA & 0x01) == 0x00) ) //if PA1 && !PA0
-			{
-				state = decHold;
-
-				if (tmpC > 0) { --tmpC; }	//TRANSITION ACTION
-
+	
+		case  wait:
+			if ((tmpA & 0x87) == 0x04) { //If only PA2 is on, then go to start of sequence 
+				state = seq1;
 			}
-			else if ((tmpA & 0x03) == 0x03) { //if PA1 && PA0
-				state = reset;
-				tmpC = 0;
-			}
-			else { //If none of the above
-				state = Wait;
-			}
-			break;
-
-		case incHold:
-			if ((tmpA & 0x01) == 0x01) { 
-				state = incHold;
+			else if ((tmpA & 0x87) == 0x80) { //If PA7 is on, then lock the door
+				state = door;
+				tmpB = 0x00;	//MIGHT HAVE TO CHANGE THIS 
 			}
 			else { 
-				state = Wait;
-			}			
-			break;
-
-		case decHold:
-			if ((tmpA & 0x02) == 0x02) {
-				state = decHold;
-			}
-			else {
-				state = Wait;
+				state = wait;
 			}
 			break;
 
-		case reset: 
-			if ((tmpA & 0x03) == 0x03) {
-				state = reset;
+		case seq1:
+			if ((tmpA & 0x87) == 0x00) { //IF PA2 is released, then go to next part of sequence 
+				state = seq2;
 			}
-			else {
-				state = Wait;
+			else { state = wait; }
+			break;
+
+		case seq2;
+			if ((tmpA & 0x87) == 0x02) { //IF PA1 is turned on, then unlock the door 
+				state = door;
+				tmpB = 0x01;
 			}
+			else { state = wait; }
+			break; 
+
+		case door: 
+			state = wait; 
 			break;
 
 		default: 
@@ -81,21 +62,9 @@ void Tick() {
 			break;					
 	}
 
-	switch(state) { 
-		case Wait:
-			break;
-
-		case incHold:
-			//if (tmpC < 9) { ++tmpC; }
-			break;
+	switch(state) { //Don't really need state actions
 		
-		case decHold:
-			//if (tmpC > 0) { --tmpC; }
-			break;
 		
-		case reset: 
-			//tmpC = 0;
-			break;
 		default:
 			break;
 	}
