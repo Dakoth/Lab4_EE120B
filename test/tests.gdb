@@ -45,6 +45,19 @@ expect state incHold
 checkResult
 
 
+#increment once AGAIN FOR AUTOGRADER 
+test "AUTOGRADER TEST: PINA: 0x01 => PORTC: 8, state: incHold"
+set state = incHold
+setPINA 0x01
+continue 2
+expectPORTC 8
+expect state incHold
+checkResult
+
+
+
+
+
 #increment twice 
 test "PINA: 0x01 (PA0), 0x00 (!PA0), 0x01(PA0) => PORTC: 9, state: incHold"
 set state = Start
