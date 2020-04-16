@@ -15,7 +15,7 @@
 enum States {Start, wait, seq1, seq2, door} state; 
 
 unsigned char tmpA; //global variables 
-unsigned char tmpC;//= 0x00; 
+unsigned char tmpB;//= 0x00; 
 
 void Tick() {
 	//unsigned char tmpA = PINA;
@@ -52,7 +52,7 @@ void Tick() {
 			else { state = wait; }
 			break; 
 
-		case door: 
+		case door: //Might have to wait for button to be released 
 			state = wait; 
 			break;
 
@@ -63,7 +63,10 @@ void Tick() {
 	}
 
 	switch(state) { //Don't really need state actions
-		
+		case wait: break;
+		case seq1: break;
+		case seq2: break;
+		case door: break;		
 		
 		default:
 			break;
@@ -73,9 +76,9 @@ void Tick() {
 int main(void) {
     /* Insert DDR and PORT initializations */
 	DDRA = 0x00; PORTA = 0xFF; //Makes all As as input
-	DDRC = 0xFF; PORTC = 0x00; //Makes all C pins as output	
+	DDRB = 0xFF; PORTB = 0x00; //Makes all C pins as output	
 	
-	tmpC = 0x00;
+	tmpB = 0x00;
 	state = Start;  
 	/* Insert your solution below */
     	while (1) {
@@ -85,7 +88,7 @@ int main(void) {
 		Tick(); 
 	
 		//write output
-		PORTC = tmpC;		
+		PORTB = tmpB;		
     	}
     	return 1;
 }
