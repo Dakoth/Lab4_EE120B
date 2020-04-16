@@ -15,27 +15,28 @@
 enum States {Start, Wait, incHold, decHold, reset} state; 
 
 unsigned char tmpA; //global variables 
-unsigned char tmpB;//= 0x00; 
+unsigned char tmpC;//= 0x00; 
 
 void Tick() {
 	//unsigned char tmpA = PINA;
 	switch(state) { //transitions
-		case Start: 
-			state = Arelease;
+		case Start:
+			tmpC = 7; 
+			state = Wait;
 			break;
 		
 		case Wait:
-			if ((tmpA & 0x01) == 0x01) {
+			if ((tmpA & 0x01) == 0x01) { //if PA0
 				state = incHold;
 			} 
-			else if ((tmpA & 0x02) == 0x02)
+			else if ((tmpA & 0x02) == 0x02) //if PA1
 			{
 				state = decHold;
 			}
-			else if ((tmpA & 0x03) == 0x03) {
+			else if ((tmpA & 0x03) == 0x03) { //if PA1 && PA0
 				state = reset;
 			}
-			else {
+			else { //If none of the above
 				state = Wait;
 			}
 			break;
@@ -60,7 +61,7 @@ void Tick() {
 
 		case reset: 
 			if ((tmpA & 0x03) == 0x03) {
-				state = resset;
+				state = reset;
 			}
 			else {
 				state = Wait;
@@ -75,8 +76,19 @@ void Tick() {
 
 	switch(state) { 
 		case Wait:
+			break;
 
-		case incHold:		
+		case incHold:
+			if (tmpC < 9) { ++tmpC; }
+			break;
+		
+		case decHold:
+			if (tmpC > 0) { --tmpC; }
+			break;
+		
+		case reset: 
+			tmpC = 0;
+			break;
 		default:
 			break;
 	}
@@ -85,11 +97,9 @@ void Tick() {
 int main(void) {
     /* Insert DDR and PORT initializations */
 	DDRA = 0x00; PORTA = 0xFF; //Makes all As as input
-	DDRB = 0xFF; PORTB = 0x00; //Makes all B pins as output	
+	DDRC = 0xFF; PORTC = 0x00; //Makes all C pins as output	
 	
-	//unsigned char tmpA;
-	//unsigned char tmpB;
-	tmpB = 0x00;
+	tmpC = 0x00;
 	state = Start;  
 	/* Insert your solution below */
     	while (1) {
@@ -99,7 +109,7 @@ int main(void) {
 		Tick(); 
 	
 		//write output
-		PORTB = tmpB;		
+		PORTC = tmpC;		
     	}
     	return 1;
 }
