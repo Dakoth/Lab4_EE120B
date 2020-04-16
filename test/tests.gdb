@@ -26,76 +26,56 @@
 echo ======================================================\n
 echo Running all tests..."\n\n
 
-# Example test
-#test "PINA: 0x00, PINB: 0x00 => PORTC: 0"
-# Set inputs
-#setPINA 0x00
-#setPINB 0x00
-# Continue for several ticks
-#continue 2
-# Set expect values
-#expectPORTC 0
-# Check pass/fail
-#checkResult
-
-# Add tests below
-# Test sequence from waitA0: A0, !A0, A1 => PORTB: 1
-#test "PINA: 0x01, 0x00, 0x02 => PORTB: 1, state: pressA1"
-#set state = waitA0
-#setPINA 0x01
-#continue 2
-#setPINA 0x00
-#continue 2 
-#setPINA 0x02
-#continue 2
-#expectPORTB 0xF0
-#expect state = pressA1
-#checkResult
-
-#Other test case
-#test cntA0 > 100 => PORTB: 0x0F
-#set exampleTick::cntA0 = 101
-#set state = pressA1
-#setPINA 0x02
-#continue 2
-#expectPORTB 0x0F
-#expect state pressA1
-#checkResult
-
-
-#PA0 = 0 from first state
-test "PINA: 0x00 => PINB: 0x01, state: Arelease"
+test "PINA: 0x00 => PORTC: 7, state: Wait"
 set state = Start
 setPINA 0x00
 continue 2
-expectPORTB 0x01
-expect state Arelease
+expectPORTC 7
+expect state Wait
+checkResult
+
+
+#increment once 
+test "PINA: 0x01 => PORTC: 8, state: incHold"
+set state = Start
+setPINA 0x01
+continue 2
+expectPORTC 8
+expect state incHold
+checkResult
+
+
+#increment twice 
+test "PINA: 0x01 (PA0), 0x00 (!PA0), 0x01(PA0) => PORTC: 9, state: incHold"
+set state = Start
+setPINA 0x01
+continue 2
+setPINA 0x00 
+continue 2
+setPINA 0x01
+continue 2
+expectPORTC 9
+expect state incHold
+checkResult
+
+
+#max value check 
+test "PORTC = 9, PINA: => PORTC: 9, state: Wait"
+set Tick::tmpC = 9
+set state = Wait  
+
+setPINA 0x01
+continue 2
+setPINA 0x00 
+continue 2
+expectPORTC 9
+expect state Wait
 checkResult
 
 
 
-#just setting PA0 = 1 from first state
-test "PINA: 0x01 => PINB: 0x02, state: Bhold"
-setPINA 0x01
-set state = Start
-#setPINA 0x01
-continue 5
-expectPORTB 0x02
-expect state Bhold
-checkResult
 
-test "PINA: 0x01, 0x00, 0x01, 0x00 => PINB: 0x01, state = Arelease"
-set state = Start 
-setPINA 0x01
-continue 2
-setPINA 0x00
-continue 2
-setPINA 0x01
-continue 2
-setPINA 0x00
 
-expectPORTB 0x01
-expect state Arelease
 
 # Report on how many tests passed/tests ran
 set $passed=$tests-$failed
