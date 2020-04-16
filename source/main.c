@@ -26,10 +26,10 @@ void Tick() {
 			break;
 		
 		case Wait:
-			if ((tmpA & 0x01) == 0x01) { //if PA0
+			if ( ((tmpA & 0x01) == 0x01) && ((tmpA & 0x02) == 0x00) ) { //if PA0 && !PA1
 				state = incHold;
 			} 
-			else if ((tmpA & 0x02) == 0x02) //if PA1
+			else if ( ((tmpA & 0x02) == 0x02) && ((tmpA & 0x01) == 0x00) ) //if PA1 && !PA0
 			{
 				state = decHold;
 			}

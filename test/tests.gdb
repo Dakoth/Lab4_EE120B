@@ -63,7 +63,6 @@ checkResult
 test "PORTC = 9, PINA: => PORTC: 9, state: Wait"
 set Tick::tmpC = 9
 set state = Wait  
-
 setPINA 0x01
 continue 2
 setPINA 0x00 
@@ -71,6 +70,17 @@ continue 2
 expectPORTC 9
 expect state Wait
 checkResult
+
+
+#reset check 
+test "PINA: 0x03 => PORTC: 0, state: reset"
+set state = Start
+setPINA 0x03
+continue 2
+expectPORTC 0
+expect state reset
+checkResult
+
 
 
 
