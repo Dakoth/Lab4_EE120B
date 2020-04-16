@@ -70,6 +70,18 @@ expect state seq2
 checkResult
 
 
+#going to seq2
+test "PINA: 0x04, 0x00 => PB:0, state: seq2"
+set state = Start
+setPINA 0x04
+continue 2
+setPINA 0x00
+continue 2
+expectPORTB 0x00
+expect state seq2
+checkResult
+
+
 
 
 
