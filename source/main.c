@@ -37,22 +37,28 @@ void Tick() {
 			}
 			break;
 
-		case seq1:
+		case seq1: //# pressed 
 			if ((tmpA & 0x87) == 0x00) { //IF PA2 is released, then go to next part of sequence 
 				state = seq2;
+			}
+			else if ((tmpA  & 0x87) == 0x04) { //If PA2 is still held down, stay in seq 2
+				state = seq1; 
 			}
 			else { state = wait; }
 			break;
 
-		case seq2:
+		case seq2: //# released 
 			if ((tmpA & 0x87) == 0x02) { //IF PA1 is turned on, then unlock the door 
 				state = door;
 				tmpB = 0x01;
 			}
+			else if ((tmpA & 0x87) == 0x00) { //IF PA2 is still released 
+				state = seq2;
+			}
 			else { state = wait; }
 			break; 
 
-		case door: //Might have to wait for button to be released 
+		case door: //Might have to wait for either button to be released 
 			state = wait; 
 			break;
 
