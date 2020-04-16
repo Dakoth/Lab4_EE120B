@@ -1,7 +1,7 @@
 /*	Author: agonz250
  *  Partner(s) Name: 028 
  *	Lab Section:
- *	Assignment: Lab # 4 Exercise # 1
+ *	Assignment: Lab # 4 Exercise # 2
  *	Exercise Description: [optional - include for your own benefit]
  *
  *	I acknowledge all content contained herein, excluding template or example
@@ -12,7 +12,7 @@
 #include "simAVRHeader.h"
 #endif
 
-enum States {Start, Arelease, Bhold, Brelease, Ahold} state; 
+enum States {Start, Wait, incHold, decHold, reset} state; 
 
 unsigned char tmpA; //global variables 
 unsigned char tmpB;//= 0x00; 
@@ -20,33 +20,52 @@ unsigned char tmpB;//= 0x00;
 void Tick() {
 	//unsigned char tmpA = PINA;
 	switch(state) { //transitions
-		case Start: //beginnning state
+		case Start: 
 			state = Arelease;
 			break;
 		
-		case Arelease: //
-			if ((tmpA & 0x01) == 0x01) 
-				{ state = Bhold; } 	
-			else { state = Arelease; }
+		case Wait:
+			if ((tmpA & 0x01) == 0x01) {
+				state = incHold;
+			} 
+			else if ((tmpA & 0x02) == 0x02)
+			{
+				state = decHold;
+			}
+			else if ((tmpA & 0x03) == 0x03) {
+				state = reset;
+			}
+			else {
+				state = Wait;
+			}
 			break;
 
-		case Bhold: 
-			if ( (tmpA & 0x01) == 0x01) 
-				{ state = Bhold; }	
-			else { state = Brelease; }
-			break;
-		
-		case Brelease: 
-			if ((tmpA & 0x01) == 0x01) 
-				{ state = Ahold; }
-			else { state = Brelease; }
+		case incHold:
+			if ((tmpA & 0x01) == 0x01) { 
+				state = incHold;
+			}
+			else { 
+				state = Wait;
+			}			
 			break;
 
-		case Ahold:
-			if ((tmpA & 0x01) == 0x01) 
-				{ state = Ahold;}
-			else { state = Arelease; }
-			break; 
+		case decHold:
+			if ((tmpA & 0x02) == 0x02) {
+				state = decHold;
+			}
+			else {
+				state = Wait;
+			}
+			break;
+
+		case reset: 
+			if ((tmpA & 0x03) == 0x03) {
+				state = resset;
+			}
+			else {
+				state = Wait;
+			}
+			break;
 
 		default: 
 			//shouldn't go here
@@ -55,29 +74,9 @@ void Tick() {
 	}
 
 	switch(state) { 
-		//case Start: 
-		//	break;
-		case Arelease:
-			tmpB = tmpB | 0x01; //sets B0 = 1
-			tmpB = tmpB & 0xFD; //Sets A0 = 0
-			
-			break; //!A1 A0
+		case Wait:
 
-		case Bhold:
-			tmpB = tmpB | 0x02; 
-			tmpB = tmpB & 0xFE;
-			break; //A0 !A0
-
-		case Brelease:
-			tmpB = tmpB | 0x02; 
-			tmpB = tmpB & 0xFE;
-			break; //A0 !A0
-
-		case Ahold:
-			tmpB = tmpB | 0x01; 
-			tmpB = tmpB & 0xFD;
-			break; //!A1 A0
-		
+		case incHold:		
 		default:
 			break;
 	}
