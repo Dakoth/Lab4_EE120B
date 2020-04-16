@@ -59,7 +59,15 @@ void Tick() {
 			break; 
 
 		case door: //Might have to wait for either button to be released 
-			state = wait; 
+			if ((tmpA & 0x87) == 0x04) { //If PA2 is still on, then stay 
+				state = door;
+			}
+			else if ((tmpA & 0x87) == 0x80) { //If PA7 is still on, then stay 
+				state = door;
+			}
+			else {//else just go back to wait state			
+				state = wait;
+			} 
 			break;
 
 		default: 
