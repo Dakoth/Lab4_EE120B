@@ -28,13 +28,20 @@ void Tick() {
 		case Wait:
 			if ( ((tmpA & 0x01) == 0x01) && ((tmpA & 0x02) == 0x00) ) { //if PA0 && !PA1
 				state = incHold;
+
+				if (tmpC < 9) { ++tmpC; } //TRANSITION ACTION
+
 			} 
 			else if ( ((tmpA & 0x02) == 0x02) && ((tmpA & 0x01) == 0x00) ) //if PA1 && !PA0
 			{
 				state = decHold;
+
+				if (tmpC > 0) { --tmpC; }	//TRANSITION ACTION
+
 			}
 			else if ((tmpA & 0x03) == 0x03) { //if PA1 && PA0
 				state = reset;
+				tmpC = 0;
 			}
 			else { //If none of the above
 				state = Wait;
@@ -79,15 +86,15 @@ void Tick() {
 			break;
 
 		case incHold:
-			if (tmpC < 9) { ++tmpC; }
+			//if (tmpC < 9) { ++tmpC; }
 			break;
 		
 		case decHold:
-			if (tmpC > 0) { --tmpC; }
+			//if (tmpC > 0) { --tmpC; }
 			break;
 		
 		case reset: 
-			tmpC = 0;
+			//tmpC = 0;
 			break;
 		default:
 			break;
