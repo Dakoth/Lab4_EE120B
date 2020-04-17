@@ -21,7 +21,7 @@ void Tick() {
 	//unsigned char tmpA = PINA;
 	switch(state) { //transitions
 		case Start:
-			tmpB = 0;
+			tmpB = 0x00;
 			state = wait;	
 			break;
 	
@@ -55,7 +55,7 @@ void Tick() {
 		case seq2: //# released 
 			if ((tmpA & 0x87) == 0x02) { //IF PA1 is turned on, then unlock the door 
 				state = door;
-				tmpB = 0x01;	//was 0x01 originally AS IT SHOULD BE TEST
+				tmpB = tmpB & 0x01;	//was 0x01 originally AS IT SHOULD BE TEST
 			}
 			else if ((tmpA & 0x87) == 0x00) { //IF PA2 is still released 
 				state = seq2;
