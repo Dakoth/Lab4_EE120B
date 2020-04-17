@@ -85,16 +85,16 @@ checkResult
 
 #locking the door ; Doesn't correctly go to door state when PA7 
 test "PB = 1, PINA: 0x80 => PB:0, state door"
-set Tick::tmpB = 1
+set Tick::tmpB = 0x01 
 set state = wait
-setPINA 0x08
+setPINA 0x80
 continue 2
 expectPORTB 0x00
 expect state door
 checkResult
 
 #full sequence + then locking the door; CORRECTLY GOES TO DOOR STATE, BUT DOESN'T SET TO 0 
-test "PINA: 0x04, 0x00, 0x02, 0x80 => PB:0, state: door"
+test "PINA: 0x04, 0x00, 0x02, 0x00, 0x80 => PB:0, state: door"
 set state = Start
 setPINA 0x04
 continue 2
@@ -102,15 +102,13 @@ setPINA 0x00
 continue 2
 setPINA 0x02
 continue 2
+setPINA 0x00
+continue 2
 setPINA 0x80
 continue 2
 expectPORTB 0x00
 expect state door
 checkResult
-
-
-
-
 
 
 

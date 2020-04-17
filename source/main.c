@@ -107,7 +107,7 @@ int main(void) {
 		Tick(); 
 	
 		//write output
-		PORTB = tmpB;		
+		PORTB = tmpB;	//	
     	}
     	return 1;
 }
