@@ -30,8 +30,9 @@ void Tick() {
 				state = seq1;
 			}
 			else if ((tmpA & 0x87) == 0x80) { //If PA7 is on, then lock the door
+				tmpB = 0;
 				state = door;
-				tmpB = 0x00;	//MIGHT HAVE TO CHANGE THIS 
+				//tmpB = 0; //sets tmpB = 0	//MIGHT HAVE TO CHANGE THIS 
 			}
 			else { 
 				state = wait;
