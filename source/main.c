@@ -21,6 +21,7 @@ void Tick() {
 	//unsigned char tmpA = PINA;
 	switch(state) { //transitions
 		case Start:
+			tmpB = 0;
 			state = wait;	
 			break;
 	
@@ -59,7 +60,7 @@ void Tick() {
 			break; 
 
 		case door: //Might have to wait for either button to be released 
-			if ((tmpA & 0x87) == 0x04) { //If PA2 is still on, then stay 
+			if ((tmpA & 0x87) == 0x02) { //If PA1 is still on, then stay 
 				state = door;
 			}
 			else if ((tmpA & 0x87) == 0x80) { //If PA7 is still on, then stay 

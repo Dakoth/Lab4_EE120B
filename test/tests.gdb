@@ -70,16 +70,29 @@ expect state seq2
 checkResult
 
 
-#going to seq2
-test "PINA: 0x04, 0x00 => PB:0, state: seq2"
+#full sequence
+test "PINA: 0x04, 0x00, 0x02 => PB:1, state: door"
 set state = Start
 setPINA 0x04
 continue 2
 setPINA 0x00
 continue 2
-expectPORTB 0x00
-expect state seq2
+setPINA 0x02
+continue 2
+expectPORTB 0x01
+expect state door
 checkResult
+
+#locking the door ; Doesn't correctly go to door state when PA7 
+test "PB = 1, PINA: 0x80 => PB:0, state door"
+set Tick::tmpB = 1
+set state = wait
+continue 2
+setPINA 0x08
+expectPORTB 0x00
+expect state door
+checkResult
+
 
 
 
