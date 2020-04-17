@@ -77,6 +77,7 @@ void Tick() {
 
 		default: 
 			//shouldn't go here
+			tmpB = tmpB && 0xFF; //if it goes here, should output error
 			state = Start;
 			break;					
 	}
