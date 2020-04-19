@@ -12,7 +12,7 @@
 #include "simAVRHeader.h"
 #endif
 
-enum States {Start, wait, seq1, seq2, doorUnlock, doorLock} state; 
+enum States {Start, wait, seq1, seq2, doorOutside, doorInside} state; 
 
 unsigned char tmpA; //global variables 
 unsigned char tmpB;//= 0x00; 
@@ -33,7 +33,7 @@ void Tick() {
 				//tmpC = 0x01;
 			}
 			else if ((tmpA & 0x80) == 0x80) { //If PA7 is on, then lock the door (!PB0)
-				state = doorLock;
+				state = doorInside;
 			}
 			else { 
 				state = wait;
@@ -53,9 +53,8 @@ void Tick() {
 
 		case seq2: //# released 
 			//tmpC = 0x02;
-			if ((tmpA & 0x87) == 0x02) { //IF PA1 is turned on, then unlock the door 
-				state = doorUnlock;
-				//tmpB = 1;	//was 0x01 originally AS IT SHOULD BE TEST
+			if ((tmpA & 0x87) == 0x02) { //IF PA1 is turned on, then unlock/lock the door depending on B
+				state = doorOutside;
 			}
 			
 			else if ((tmpA & 0x87) == 0x00) { //IF PA2 is still released 
@@ -67,11 +66,9 @@ void Tick() {
 				}
 			break; 
 
-		case doorUnlock: //Might have to wait for either button to be released 
-			//tmpC = 0x03;
-			
+		case doorOutside:  	
 			if ((tmpA & 0x02) == 0x02) { //If PA1 is still on, then stay 
-				state = doorUnlock;
+				state = doorOutside;
 			}
 			/*
 			else if ((tmpA & 0x80) == 0x80) { //If PA7 is still on, then stay 
@@ -83,11 +80,11 @@ void Tick() {
 			} 
 			break;
 
-		case doorLock: 
+		case doorInside: 
 			//tmpC = 0x04;
 
 			if ((tmpA & 0x80) == 0x80) { //IF PA7 is still on, stay
-				state = doorLock;
+				state = doorInside;
 			}
 			else {
 				state = wait;
@@ -111,12 +108,12 @@ void Tick() {
 		case seq2: 
 			tmpC = 2;
 			break;
-		case doorUnlock:
+		case doorOutside:	//Change this for part 4
 			tmpC = 3;
 			tmpB = 1;
 			break;
 
-		case doorLock:
+		case doorInside:
 			tmpC = 4;
 			tmpB = 0;
 			break;		
