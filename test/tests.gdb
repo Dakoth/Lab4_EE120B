@@ -72,8 +72,8 @@ checkResult
 #checkResult
 
 
-#full unlock sequence
-test "PINA: 0x04, 0x00, 0x02 => PB:1, PORTC:0x03 state: doorOutside"
+#full sequence to unLock
+test "PB = 0: PINA: 0x04, 0x00, 0x02 => PB:1, PORTC:0x03 state: doorOutside"
 set state = Start
 setPINA 0x04
 continue 2
@@ -85,25 +85,6 @@ expectPORTB 0x01
 expectPORTC 0x03
 expect state doorOutside
 checkResult
-
-#full sequence + then locking the door; CORRECTLY GOES TO DOOR STATE, BUT DOESN'T SET TO 0 
-#test "PINA: 0x04, 0x00, 0x02, 0x00, 0x80 => PB:0, state: door"
-#set state = Start
-#setPINA 0x04
-#continue 2
-#setPINA 0x00
-#continue 2
-#setPINA 0x02
-#continue 2
-#setPINA 0x00
-#continue 2
-#setPINA 0x80
-#continue 2
-#expectPORTB 0x00
-#expect state door
-#checkResult
-
-
 
 #locking the door ; 
 test "PB = 1, PINA: 0x80 => PB:0, PORTC: 0x04 state doorInside"
@@ -155,6 +136,23 @@ expectPORTB 0x00
 expectPORTC 0x00
 expect state wait
 checkResult
+
+
+#full sequence to Lock
+test "PB = 1: PINA: 0x04, 0x00, 0x02 => PB:0, PORTC:0x03 state: doorOutside"
+set Tick::tmpB = 1
+set state = wait
+setPINA 0x04
+continue 2
+setPINA 0x00
+continue 2
+setPINA 0x02
+continue 2
+expectPORTB 0x00
+expectPORTC 0x03
+expect state doorOutside
+checkResult
+
 
 
 # Report on how many tests passed/tests ran

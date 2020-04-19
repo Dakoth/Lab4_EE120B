@@ -110,7 +110,14 @@ void Tick() {
 			break;
 		case doorOutside:	//Change this for part 4
 			tmpC = 3;
-			tmpB = 1;
+
+			if (tmpB == 1) { //If locked, unlock the door 
+				tmpB = 0;
+			}
+			else { 	//if the door was unlocked, lock it 
+				tmpB = 1;
+			}
+
 			break;
 
 		case doorInside:
