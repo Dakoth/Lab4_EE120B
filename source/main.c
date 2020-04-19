@@ -12,7 +12,7 @@
 #include "simAVRHeader.h"
 #endif
 
-enum States {Start, wait, seq1, seq2, doorOutside, doorInside} state; 
+enum States {Start, wait, seq1, seq2, doorOutsideUnlock, doorOutsideLock, doorInside} state; 
 
 unsigned char tmpA; //global variables 
 unsigned char tmpB;//= 0x00; 
@@ -53,10 +53,12 @@ void Tick() {
 
 		case seq2: //# released 
 			//tmpC = 0x02;
-			if ((tmpA & 0x87) == 0x02) { //IF PA1 is turned on, then unlock/lock the door depending on B
-				state = doorOutside;
+			if ( ((tmpA & 0x87) == 0x02) && (tmpB == 0) ) { //IF PA1 is turned on, then unlock/lock the door
+				state = doorOutsideUnlock;
 			}
-			
+			else if ( ((tmpA & 0x87) == 0x02) && tmpB == 1) {
+				state = doorOutsideLock;
+			}
 			else if ((tmpA & 0x87) == 0x00) { //IF PA2 is still released 
 				state = seq2;
 			}
@@ -66,9 +68,9 @@ void Tick() {
 				}
 			break; 
 
-		case doorOutside:  	
+		case doorOutsideUnlock:  	
 			if ((tmpA & 0x02) == 0x02) { //If PA1 is still on, then stay 
-				state = doorOutside;
+				state = doorOutsideUnlock;
 			}
 			/*
 			else if ((tmpA & 0x80) == 0x80) { //If PA7 is still on, then stay 
@@ -79,6 +81,21 @@ void Tick() {
 				state = wait;
 			} 
 			break;
+
+		case doorOutsideLock: 
+  			if ((tmpA & 0x02) == 0x02) { //If PA1 is still on, then stay 
+				state = doorOutsideLock;
+			}
+			/*
+			else if ((tmpA & 0x80) == 0x80) { //If PA7 is still on, then stay 
+				state = doorUnlock;
+			}
+			*/
+			else {//else just go back to wait state			
+				state = wait;
+			} 
+			break;
+
 
 		case doorInside: 
 			//tmpC = 0x04;
@@ -108,20 +125,18 @@ void Tick() {
 		case seq2: 
 			tmpC = 2;
 			break;
-		case doorOutside:	//Change this for part 4
+
+		case doorOutsideUnlock:
 			tmpC = 3;
-
-			if (tmpB == 1) { //If locked, unlock the door 
-				tmpB = 0;
-			}
-			else { 	//if the door was unlocked, lock it 
-				tmpB = 1;
-			}
-
+			tmpB = 1;
 			break;
 
-		case doorInside:
+		case doorOutsideLock:
 			tmpC = 4;
+			tmpB = 0;
+
+		case doorInside:
+			tmpC = 5;
 			tmpB = 0;
 			break;		
 		
