@@ -59,7 +59,7 @@ void Tick() {
 			tmpC = 0x02;
 			if ((tmpA & 0x87) == 0x02) { //IF PA1 is turned on, then unlock the door 
 				state = door;
-				tmpB = tmpB & 0x01;	//was 0x01 originally AS IT SHOULD BE TEST
+				tmpB = 1;	//was 0x01 originally AS IT SHOULD BE TEST
 			}
 			else if ((tmpA & 0x87) == 0x00) { //IF PA2 is still released 
 				state = seq2;
