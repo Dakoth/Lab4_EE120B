@@ -27,21 +27,23 @@ echo ======================================================\n
 echo Running all tests..."\n\n
 
 #nothing
-test "PINA: 0x00 => PB:0, state: wait"
+test "PINA: 0x00 => PORTB:0, PORTC: 0X00 state: wait"
 set state = Start
 setPINA 0x00
 continue 2
 expectPORTB 0x00
+expectPORTC 0x00
 expect state wait
 checkResult
 
 
 #1st part of sequence CHANGED TO BE LIKE THE AUTOGRADER
-test "PINA: 0x03 => PB:0, state: wait"
+test "PINA: 0x03 => PB:0, PORTC: 0x00 state: wait"
 set state = Start
 setPINA 0x03
 continue 2
 expectPORTB 0x00
+expectPORTC 0x00
 expect state wait
 checkResult
 
@@ -71,7 +73,7 @@ checkResult
 
 
 #full unlock sequence
-test "PINA: 0x04, 0x00, 0x02 => PB:1, state: door"
+test "PINA: 0x04, 0x00, 0x02 => PB:1, PORTC:0x03 state: door"
 set state = Start
 setPINA 0x04
 continue 2
@@ -80,6 +82,7 @@ continue 2
 setPINA 0x02
 continue 2
 expectPORTB 0x01
+expectPORTC 0x03
 expect state door
 checkResult
 
@@ -101,17 +104,18 @@ checkResult
 #checkResult
 
 #locking the door ; Doesn't correctly go to door state when PA7 
-test "PB = 1, PINA: 0x80 => PB:0, state door"
+test "PB = 1, PINA: 0x80 => PB:0, PORTC: 0x03 state door"
 set Tick::tmpB = 0x01 
 set state = wait
 setPINA 0x80
 continue 2
 expectPORTB 0x00
+expectPORTC 0x03
 expect state door
 checkResult
 
 #autograder test
-test "PINA: 0x04, 0x00, 0x01 => PORTB: 0x00, state wait"
+test "PINA: 0x04, 0x00, 0x01 => PORTB: 0x00, PORTC: 0x00 state wait"
 set state = Start
 setPINA 0x04
 continue 2
@@ -120,6 +124,7 @@ continue 2
 setPINA 0x01
 continue 2
 expectPORTB 0x00
+expectPORTC 0x00
 expect state wait
 
 # Report on how many tests passed/tests ran

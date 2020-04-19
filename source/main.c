@@ -16,6 +16,7 @@ enum States {Start, wait, seq1, seq2, door} state;
 
 unsigned char tmpA; //global variables 
 unsigned char tmpB;//= 0x00; 
+unsigned char tmpC; 
 
 void Tick() {
 	//unsigned char tmpA = PINA;
@@ -26,6 +27,7 @@ void Tick() {
 			break;
 	
 		case  wait:
+			tmpC = 0x00;
 			if ((tmpA & 0x87) == 0x04) { //If only PA2 is on, then go to start of sequence 
 				state = seq1;
 			}
@@ -43,6 +45,7 @@ void Tick() {
 			break;
 
 		case seq1: //# pressed 
+			tmpC = 0x01;
 			if ((tmpA & 0x87) == 0x00) { //IF PA2 is released, then go to next part of sequence 
 				state = seq2;
 			}
@@ -53,6 +56,7 @@ void Tick() {
 			break;
 
 		case seq2: //# released 
+			tmpC = 0x02;
 			if ((tmpA & 0x87) == 0x02) { //IF PA1 is turned on, then unlock the door 
 				state = door;
 				tmpB = tmpB & 0x01;	//was 0x01 originally AS IT SHOULD BE TEST
@@ -64,6 +68,7 @@ void Tick() {
 			break; 
 
 		case door: //Might have to wait for either button to be released 
+			tmpC = 0x03;
 			if ((tmpA & 0x87) == 0x02) { //If PA1 is still on, then stay 
 				state = door;
 			}
@@ -108,7 +113,8 @@ int main(void) {
 		Tick(); 
 	
 		//write output
-		PORTB = tmpB;	//	
+		PORTB = tmpB;	//
+		PORTC = tmpC;	
     	}
     	return 1;
 }
