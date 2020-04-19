@@ -103,6 +103,8 @@ checkResult
 #expect state door
 #checkResult
 
+
+
 #locking the door ; 
 test "PB = 1, PINA: 0x80 => PB:0, PORTC: 0x04 state doorLock"
 set Tick::tmpB = 1
@@ -113,6 +115,32 @@ expectPORTB 0x00
 expectPORTC 0x04 
 expect state doorLock
 checkResult
+
+
+
+#autograder test part 1
+test "AGTEST PT 1 PINA: 0x04 => PORTB: 0x00, PORTC: 0x01 state seq1"
+set state = Start
+setPINA 0x04
+continue 2
+expectPORTB 0x00
+expectPORTC 0x01
+expect state seq1
+checkResult
+
+
+#autograder test part 2
+test "AGTEST PT 2 PINA: 0x04, 0x00 => PORTB: 0x00, PORTC: 0x02 state seq2"
+set state = Start
+setPINA 0x04
+continue 2
+setPINA 0x00
+continue 2 
+expectPORTB 0x00
+expectPORTC 0x02
+expect state seq2
+checkResult
+
 
 #autograder test
 test "PINA: 0x04, 0x00, 0x01 => PORTB: 0x00, PORTC: 0x00 state wait"
@@ -127,8 +155,6 @@ expectPORTB 0x00
 expectPORTC 0x00
 expect state wait
 checkResult
-
-
 
 
 # Report on how many tests passed/tests ran
