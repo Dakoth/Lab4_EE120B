@@ -27,10 +27,10 @@ void Tick() {
 			break;
 	
 		case  wait:
-			tmpC = 0x00;
+			//tmpC = 0x00;
 			if ((tmpA & 0x04) == 0x04) { //If only PA2 is on, then go to start of sequence 
 				state = seq1;
-				tmpC = 0x01;
+				//tmpC = 0x01;
 			}
 			else if ((tmpA & 0x80) == 0x80) { //If PA7 is on, then lock the door (!PB0)
 				state = doorLock;
@@ -41,7 +41,7 @@ void Tick() {
 			break;
 
 		case seq1: //# pressed 
-			tmpC = 0x01;
+			//tmpC = 0x01;
 			if ((tmpA & 0x87) == 0x00) { //IF PA2 is released, then go to next part of sequence 
 				state = seq2;
 			}
@@ -52,7 +52,7 @@ void Tick() {
 			break;
 
 		case seq2: //# released 
-			tmpC = 0x02;
+			//tmpC = 0x02;
 			if ((tmpA & 0x87) == 0x02) { //IF PA1 is turned on, then unlock the door 
 				state = doorUnlock;
 				//tmpB = 1;	//was 0x01 originally AS IT SHOULD BE TEST
@@ -68,7 +68,7 @@ void Tick() {
 			break; 
 
 		case doorUnlock: //Might have to wait for either button to be released 
-			tmpC = 0x03;
+			//tmpC = 0x03;
 			
 			if ((tmpA & 0x02) == 0x02) { //If PA1 is still on, then stay 
 				state = doorUnlock;
@@ -84,7 +84,7 @@ void Tick() {
 			break;
 
 		case doorLock: 
-			tmpC = 0x04;
+			//tmpC = 0x04;
 
 			if ((tmpA & 0x80) == 0x80) { //IF PA7 is still on, stay
 				state = doorLock;
@@ -102,14 +102,22 @@ void Tick() {
 	}
 	
 	switch(state) { //Don't really need state actions
-		case wait: break;
-		case seq1: break;
-		case seq2: break;
+		case wait:
+			tmpC = 0; 
+			break;
+		case seq1:
+			tmpC = 1; 
+			break;
+		case seq2: 
+			tmpC = 2;
+			break;
 		case doorUnlock:
+			tmpC = 3;
 			tmpB = 1;
 			break;
 
 		case doorLock:
+			tmpC = 4;
 			tmpB = 0;
 			break;		
 		
