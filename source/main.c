@@ -86,6 +86,7 @@ void Tick() {
 			else {
 				state = wait;
 			}
+			break;
 
 		default: 
 			//shouldn't go here

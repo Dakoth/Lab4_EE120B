@@ -103,14 +103,14 @@ checkResult
 #expect state door
 #checkResult
 
-#locking the door ; Doesn't correctly go to door state when PA7 
+#locking the door ; 
 test "PB = 1, PINA: 0x80 => PB:0, PORTC: 0x04 state doorLock"
-set Tick::tmpB = 0x01 
+set Tick::tmpB = 1
 set state = wait
 setPINA 0x80
 continue 2
 expectPORTB 0x00
-expectPORTC 0x04
+expectPORTC 0x04 
 expect state doorLock
 checkResult
 
@@ -126,6 +126,10 @@ continue 2
 expectPORTB 0x00
 expectPORTC 0x00
 expect state wait
+checkResult
+
+
+
 
 # Report on how many tests passed/tests ran
 set $passed=$tests-$failed

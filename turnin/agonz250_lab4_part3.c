@@ -12,7 +12,7 @@
 #include "simAVRHeader.h"
 #endif
 
-enum States {Start, wait, seq1, seq2, door} state; 
+enum States {Start, wait, seq1, seq2, doorUnlock, doorLock} state; 
 
 unsigned char tmpA; //global variables 
 unsigned char tmpB;//= 0x00; 
@@ -28,16 +28,11 @@ void Tick() {
 	
 		case  wait:
 			tmpC = 0x00;
-			if ((tmpA & 0x87) == 0x04) { //If only PA2 is on, then go to start of sequence 
+			if ((tmpA & 0x04) == 0x04) { //If only PA2 is on, then go to start of sequence 
 				state = seq1;
 			}
-			else if ((tmpA & 0x87) == 0x80) { //If PA7 is on, then lock the door (!PB0)
-				//if (tmpB > 0) {
-				//	--tmpB;
-				//}
-				//tmpB = 0;
-				tmpB = tmpB & 0x00;
-				state = door;
+			else if ((tmpA & 0x80) == 0x80) { //If PA7 is on, then lock the door (!PB0)
+				state = doorLock;
 			}
 			else { 
 				state = wait;
@@ -58,7 +53,7 @@ void Tick() {
 		case seq2: //# released 
 			tmpC = 0x02;
 			if ((tmpA & 0x87) == 0x02) { //IF PA1 is turned on, then unlock the door 
-				state = door;
+				state = doorUnlock;
 				tmpB = 1;	//was 0x01 originally AS IT SHOULD BE TEST
 			}
 			else if ((tmpA & 0x87) == 0x00) { //IF PA2 is still released 
@@ -67,17 +62,30 @@ void Tick() {
 			else { state = wait; }
 			break; 
 
-		case door: //Might have to wait for either button to be released 
+		case doorUnlock: //Might have to wait for either button to be released 
 			tmpC = 0x03;
-			if ((tmpA & 0x87) == 0x02) { //If PA1 is still on, then stay 
-				state = door;
+			
+			
+			if ((tmpA & 0x02) == 0x02) { //If PA1 is still on, then stay 
+				state = doorUnlock;
 			}
-			else if ((tmpA & 0x87) == 0x80) { //If PA7 is still on, then stay 
-				state = door;
+			else if ((tmpA & 0x80) == 0x80) { //If PA7 is still on, then stay 
+				state = doorUnlock;
 			}
 			else {//else just go back to wait state			
 				state = wait;
 			} 
+			break;
+
+		case doorLock: 
+			tmpC = 0x04;
+
+			if ((tmpA & 0x80) == 0x80) { //IF PA7 is still on, stay
+				state = doorLock;
+			}
+			else {
+				state = wait;
+			}
 			break;
 
 		default: 
@@ -86,12 +94,15 @@ void Tick() {
 			state = Start;
 			break;					
 	}
-
+	
 	switch(state) { //Don't really need state actions
 		case wait: break;
 		case seq1: break;
 		case seq2: break;
-		case door: break;		
+		case doorUnlock: break;
+		case doorLock:
+			tmpB = 0;
+			break;		
 		
 		default:
 			break;
@@ -104,6 +115,7 @@ int main(void) {
 	DDRB = 0xFF; PORTB = 0x00; //Makes all C pins as output	
 	
 	tmpB = 0x00;
+	tmpC = 0x00;
 	state = Start;  
 	/* Insert your solution below */
     	while (1) {
