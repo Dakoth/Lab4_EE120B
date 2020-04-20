@@ -85,7 +85,7 @@ void Tick() {
 			break;					
 	}
 	
-	switch(state) { //Don't really need state actions
+	switch(state) { 
 		case locked:
 			tmpB = 0;
 			tmpC = 0; 
