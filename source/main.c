@@ -12,7 +12,7 @@
 #include "simAVRHeader.h"
 #endif
 
-enum States {Start, locked, correctButt, correctButt, unlocked} state; 
+enum States {Start, locked, correctButt, correctButtRelease, unlocked} state; 
 
 unsigned char tmpA; //global variables 
 unsigned char tmpB;//= 0x00; 
@@ -21,128 +21,86 @@ unsigned char array[4] = {0x04, 0x01, 0x02, 0x01};
 unsigned char count = 0;
 
 void Tick() {
-	//tmpA = PINA;
 	switch(state) { //transitions
 		case Start:
 			tmpB = 0;
-			state = wait;	
+			state = locked;	
 			break;
-	
-		case  wait:
-			//tmpC = 0x00;
-			if ((tmpA & 0x04) == 0x04) { //If only PA2 is on, then go to start of sequence 
-				state = seq1;
-				//tmpC = 0x01;
-			}
-			else if ((tmpA & 0x80) == 0x80) { //If PA7 is on, then lock the door (!PB0)
-				state = doorInside;
+		
+		case locked:
+			count = 0;
+
+			if ((tmpA & 0x07) == 0x04) { //If # start checking sequence
+				state = correctButt;
+				++count;
 			}
 			else { 
-				state = wait;
+				state = locked;
 			}
 			break;
 
-		case seq1: //# pressed 
-			//tmpC = 0x01;
-			if ((tmpA & 0x87) == 0x00) { //IF PA2 is released, then go to next part of sequence 
-				state = seq2;
+		case correctButt: //A correct button in the sequence is held down
+			if ((tmpA & 0x07) == array[count]) { //If correct button, go to next in sequence 
+				state = correctButt;
 			}
-			else if ((tmpA  & 0x04) == 0x04) { //If PA2 is still held down, stay in seq 2
-				state = seq1; 
+			else if ((tmpA & 0x07) == 0x00) { //IF a button is released, go to other state 
+				++count;
+				state = correctButtRelease;
 			}
-			else { state = wait; }
+			else {				//if failed, go back to start 
+				state = locked; 
+				count = 0;
+			}
+		
 			break;
 
-		case seq2: //# released 
-			//tmpC = 0x02;
-			if ( ((tmpA & 0x87) == 0x02) && (tmpB == 0) ) { //IF PA1 is turned on, then unlock/lock the door
-				state = doorOutsideUnlock;
+		case correctButtRelease:
+			if ((tmpA & 0x07) == 0x00) {
+				state = correctButtRelease;
 			}
-			else if ( ((tmpA & 0x87) == 0x02) && tmpB == 1) {
-				state = doorOutsideLock;
+			else if  (count == 3 && (tmpA & 0x07) == array[count]) { //if reached correct end of sequence
+				state = unlocked;
 			}
-			else if ((tmpA & 0x87) == 0x00) { //IF PA2 is still released 
-				state = seq2;
+			else if ((tmpA & 0x07) == array[count]) { //If inputted next button in sequence
+				state = correctButt;
 			}
-			
 			else { 
-				state = wait; 
-				}
-			break; 
-
-		case doorOutsideUnlock:  	
-			if ((tmpA & 0x02) == 0x02) { //If PA1 is still on, then stay 
-				state = doorOutsideUnlock;
-			}
-			/*
-			else if ((tmpA & 0x80) == 0x80) { //If PA7 is still on, then stay 
-				state = doorUnlock;
-			}
-			*/
-			else {//else just go back to wait state			
-				state = wait;
-			} 
-			break;
-
-		case doorOutsideLock: 
-  			if ((tmpA & 0x02) == 0x02) { //If PA1 is still on, then stay 
-				state = doorOutsideLock;
-			}
-			/*
-			else if ((tmpA & 0x80) == 0x80) { //If PA7 is still on, then stay 
-				state = doorUnlock;
-			}
-			*/
-			else {//else just go back to wait state			
-				state = wait;
-			} 
-			break;
-
-
-		case doorInside: 
-			//tmpC = 0x04;
-
-			if ((tmpA & 0x80) == 0x80) { //IF PA7 is still on, stay
-				state = doorInside;
-			}
-			else {
-				state = wait;
+				state = locked;
+				count = 0;
 			}
 			break;
 
+		case unlocked: 
+			if ((tmpA & 0x80) == 0x80) {
+				count = 0;
+				state = locked;
+			}
+			else { 
+				state = unlocked; 
+			break;
+		
 		default: 
-			//shouldn't go here
-			//tmpB = tmpB && 0xFF; //if it goes here, should output error
 			state = Start;
 			break;					
 	}
 	
 	switch(state) { //Don't really need state actions
-		case wait:
+		case locked:
+			tmB = 0;
 			tmpC = 0; 
 			break;
-		case seq1:
+		case correctButt:
 			tmpC = 1; 
 			break;
-		case seq2: 
+		case correctButtRelease: 
 			tmpC = 2;
 			break;
 
-		case doorOutsideUnlock:
-			tmpC = 3;
+		case unlocked: 
 			tmpB = 1;
-			break;
+			tmpC = 3;
+			break;	
 
-		case doorOutsideLock:
-			tmpC = 4;
-			tmpB = 0;
-			break;
-
-		case doorInside:
-			tmpC = 5;
-			tmpB = 0;
-			break;		
-		
 		default:
 			break;
 	}
@@ -151,7 +109,8 @@ void Tick() {
 int main(void) {
     /* Insert DDR and PORT initializations */
 	DDRA = 0x00; PORTA = 0xFF; //Makes all As as input
-	DDRB = 0xFF; PORTB = 0x00; //Makes all C pins as output	
+	DDRB = 0xFF; PORTB = 0x00; //Makes all B pins as output	
+	DDRC = 0xFF; PORTC = 0x00; 
 	
 	tmpB = 0x00;
 	tmpC = 0x00;
