@@ -1,7 +1,7 @@
 /*	Author: agonz250
  *  Partner(s) Name: 028 
  *	Lab Section:
- *	Assignment: Lab # 4 Exercise # 2
+ *	Assignment: Lab # 4 Exercise # 5
  *	Exercise Description: [optional - include for your own benefit]
  *
  *	I acknowledge all content contained herein, excluding template or example
@@ -58,7 +58,7 @@ void Tick() {
 			if ((tmpA & 0x07) == 0x00) {
 				state = correctButtRelease;
 			}
-			else if  (count == 3 && (tmpA & 0x07) == array[count]) { //if reached correct end of sequence
+			else if  ( (count == 3)&& (tmpA & 0x07) == array[count]) { //if reached correct end of sequence
 				state = unlocked;
 			}
 			else if ((tmpA & 0x07) == array[count]) { //If inputted next button in sequence
@@ -77,6 +77,7 @@ void Tick() {
 			}
 			else { 
 				state = unlocked; 
+			}
 			break;
 		
 		default: 
@@ -86,7 +87,7 @@ void Tick() {
 	
 	switch(state) { //Don't really need state actions
 		case locked:
-			tmB = 0;
+			tmpB = 0;
 			tmpC = 0; 
 			break;
 		case correctButt:
