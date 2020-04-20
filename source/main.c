@@ -12,11 +12,13 @@
 #include "simAVRHeader.h"
 #endif
 
-enum States {Start, wait, seq1, seq2, doorOutsideUnlock, doorOutsideLock, doorInside} state; 
+enum States {Start, locked, correctButt, correctButt, unlocked} state; 
 
 unsigned char tmpA; //global variables 
 unsigned char tmpB;//= 0x00; 
 unsigned char tmpC; 
+unsigned char array[4] = {0x04, 0x01, 0x02, 0x01};
+unsigned char count = 0;
 
 void Tick() {
 	//tmpA = PINA;
